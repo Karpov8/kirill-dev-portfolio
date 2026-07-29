@@ -1,0 +1,131 @@
+---
+import { portfolio } from "../data/portfolio";
+
+const { advantages } = portfolio;
+---
+
+<section class="advantages" id="approach" aria-labelledby="advantages-title">
+  <div class="section-inner">
+    <header class="section-heading">
+      <h2 id="advantages-title">{advantages.title}</h2>
+    </header>
+
+    <div class="comparison">
+      <article class="comparison-card comparison-card--basic">
+        <h3>{advantages.basic.title}</h3>
+        <ul>
+          {advantages.basic.items.map((item) => <li>{item}</li>)}
+        </ul>
+      </article>
+
+      <article class="comparison-card comparison-card--approach">
+        <p class="approach-label">Kirill Dev / подход</p>
+        <h3>{advantages.approach.title}</h3>
+        <ul>
+          {advantages.approach.items.map((item) => <li>{item}</li>)}
+        </ul>
+      </article>
+    </div>
+
+    <blockquote>{advantages.note}</blockquote>
+  </div>
+</section>
+
+<style>
+  .advantages {
+    border-block: 1px solid var(--kd-color-border-subtle);
+    background: var(--kd-color-background-section);
+  }
+
+  .comparison {
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: 1rem;
+  }
+
+  .comparison-card {
+    position: relative;
+    min-width: 0;
+    padding: clamp(1.4rem, 3vw, 2.5rem);
+    border: 1px solid var(--kd-color-border-subtle);
+    border-radius: var(--kd-radius-xl);
+    background: var(--kd-color-background-surface);
+    overflow: hidden;
+  }
+
+  .comparison-card--approach {
+    border-color: rgb(64 215 232 / 24%);
+    background:
+      radial-gradient(circle at 100% 0%, rgb(64 215 232 / 11%), transparent 46%),
+      var(--kd-color-background-surface);
+  }
+
+  .comparison-card h3 {
+    font-size: clamp(1.45rem, 3vw, 2.2rem);
+    letter-spacing: -0.04em;
+  }
+
+  .approach-label {
+    margin-bottom: 0.7rem;
+    color: var(--kd-color-text-accent);
+    font-family: var(--kd-font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+  }
+
+  .comparison-card ul {
+    margin: 1.75rem 0 0;
+    padding: 0;
+    display: grid;
+    gap: 0.85rem;
+    list-style: none;
+  }
+
+  .comparison-card li {
+    position: relative;
+    padding-left: 1.4rem;
+    color: var(--kd-color-text-secondary);
+    line-height: 1.55;
+  }
+
+  .comparison-card li::before {
+    position: absolute;
+    top: 0.7em;
+    left: 0;
+    width: 0.42rem;
+    height: 1px;
+    background: var(--kd-color-text-muted);
+    content: "";
+  }
+
+  .comparison-card--approach li {
+    color: var(--kd-color-text-primary);
+  }
+
+  .comparison-card--approach li::before {
+    width: 0.45rem;
+    height: 0.45rem;
+    top: 0.5em;
+    border-radius: 50%;
+    background: var(--kd-color-status-success);
+    box-shadow: 0 0 0 0.24rem rgb(91 210 154 / 9%);
+  }
+
+  blockquote {
+    max-width: 58rem;
+    margin: clamp(1.5rem, 4vw, 3rem) 0 0 auto;
+    padding: clamp(1.25rem, 3vw, 2.25rem);
+    border-left: 2px solid var(--kd-color-text-accent);
+    color: var(--kd-color-text-primary);
+    font-size: clamp(1.15rem, 2.2vw, 1.65rem);
+    line-height: 1.55;
+    letter-spacing: -0.02em;
+  }
+
+  @media (max-width: 760px) {
+    .comparison {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

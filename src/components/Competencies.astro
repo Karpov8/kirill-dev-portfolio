@@ -1,0 +1,152 @@
+---
+import { portfolio } from "../data/portfolio";
+
+const { competencies } = portfolio;
+---
+
+<section class="competencies" id="competencies" aria-labelledby="competencies-title">
+  <div class="section-inner">
+    <header class="section-heading">
+      <h2 id="competencies-title">{competencies.title}</h2>
+    </header>
+
+    <div class="competency-grid">
+      {competencies.items.map((item) => (
+        <article class="competency-card">
+          <span class="competency-index" aria-hidden="true">{item.index}</span>
+          <h3>{item.title}</h3>
+          <p>{item.description}</p>
+        </article>
+      ))}
+    </div>
+
+    <div class="competency-context">
+      <p>{competencies.approach}</p>
+      <p>{competencies.digitalExperience}</p>
+    </div>
+  </div>
+</section>
+
+<style>
+  .competencies {
+    border-block: 1px solid var(--kd-color-border-subtle);
+    background: rgb(255 255 255 / 1.5%);
+  }
+
+  .competency-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    border: 1px solid var(--kd-color-border-subtle);
+    border-radius: var(--kd-radius-xl);
+    overflow: clip;
+    background: var(--kd-color-background-surface);
+  }
+
+  .competency-card {
+    position: relative;
+    min-height: 18rem;
+    padding: clamp(1.4rem, 2.6vw, 2.2rem);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: var(--kd-space-4);
+    isolation: isolate;
+  }
+
+  .competency-card + .competency-card {
+    border-left: 1px solid var(--kd-color-border-subtle);
+  }
+
+  .competency-card::before {
+    position: absolute;
+    z-index: -1;
+    inset: 0;
+    background: radial-gradient(circle at 18% 14%, rgb(64 215 232 / 10%), transparent 45%);
+    content: "";
+    opacity: 0;
+    transition: opacity 180ms ease;
+  }
+
+  .competency-card:hover::before,
+  .competency-card:focus-within::before {
+    opacity: 1;
+  }
+
+  .competency-index {
+    position: absolute;
+    top: 1.5rem;
+    left: 1.5rem;
+    color: var(--kd-color-text-accent);
+    font-family: var(--kd-font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+  }
+
+  .competency-card h3 {
+    font-size: clamp(1.25rem, 2vw, 1.6rem);
+    letter-spacing: -0.03em;
+  }
+
+  .competency-card p {
+    color: var(--kd-color-text-secondary);
+    line-height: 1.65;
+  }
+
+  .competency-context {
+    margin-top: clamp(1rem, 2vw, 1.5rem);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    overflow: hidden;
+    border: 1px solid var(--kd-color-border-subtle);
+    border-radius: var(--kd-radius-lg);
+    background: var(--kd-color-border-subtle);
+  }
+
+  .competency-context p {
+    padding: clamp(1.25rem, 2.5vw, 2rem);
+    color: var(--kd-color-text-secondary);
+    background: var(--kd-color-background-page);
+    line-height: 1.7;
+  }
+
+  .competency-context p:first-child {
+    color: var(--kd-color-text-primary);
+  }
+
+  @media (max-width: 960px) {
+    .competency-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .competency-card:nth-child(3) {
+      border-left: 0;
+    }
+
+    .competency-card:nth-child(n + 3) {
+      border-top: 1px solid var(--kd-color-border-subtle);
+    }
+  }
+
+  @media (max-width: 620px) {
+    .competency-grid,
+    .competency-context {
+      grid-template-columns: 1fr;
+    }
+
+    .competency-card {
+      min-height: 14rem;
+    }
+
+    .competency-card + .competency-card {
+      border-top: 1px solid var(--kd-color-border-subtle);
+      border-left: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .competency-card::before {
+      transition: none;
+    }
+  }
+</style>

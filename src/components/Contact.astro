@@ -1,0 +1,349 @@
+---
+import { portfolio, resolveTelegramUrl, resolveTelegramUsername } from "../data/portfolio";
+
+const { contact, contacts } = portfolio;
+const configured = (value: string | undefined) =>
+  Boolean(value && value.trim() && !/(USERNAME|YOUR_|example\.com|#)/i.test(value));
+const telegramUsername = resolveTelegramUsername(contacts.telegramUsername, contacts.telegramUrl);
+const telegramUrl = resolveTelegramUrl(contacts.telegramUsername, contacts.telegramUrl);
+const kworkUrl = configured(contacts.kworkUrl) ? contacts.kworkUrl : "";
+const hasDirectLinks = Boolean(telegramUrl || kworkUrl);
+---
+
+<section
+  class="contact-section"
+  id="contact"
+  aria-labelledby="contact-title"
+  data-contact-section
+  data-telegram-username={telegramUsername}
+>
+  <div class="contact-intro">
+    <p class="section-kicker">Начать проект</p>
+    <h2 id="contact-title">{contact.title}</h2>
+    <p>{contact.subtitle}</p>
+
+    {hasDirectLinks && (
+      <nav class="direct-links" aria-label="Альтернативные способы связи">
+        {telegramUrl && (
+          <a href={telegramUrl} target="_blank" rel="noopener noreferrer">Написать в Telegram</a>
+        )}
+        {kworkUrl && (
+          <a href={kworkUrl} target="_blank" rel="noopener noreferrer">Посмотреть профиль на Kwork</a>
+        )}
+      </nav>
+    )}
+  </div>
+
+  <form class="contact-form" data-contact-form action="#contact" novalidate>
+    <div class="field-row">
+      <div class="field">
+        <label for="contact-name">Имя</label>
+        <input
+          id="contact-name"
+          name="name"
+          type="text"
+          autocomplete="name"
+          required
+          minlength="2"
+          aria-describedby="contact-name-error"
+        />
+        <p id="contact-name-error" class="field-error" data-field-error="name"></p>
+      </div>
+
+      <div class="field">
+        <label for="contact-method">Способ связи</label>
+        <input
+          id="contact-method"
+          name="contact"
+          type="text"
+          autocomplete="email"
+          required
+          minlength="3"
+          placeholder="Telegram, email или телефон"
+          aria-describedby="contact-method-error"
+        />
+        <p id="contact-method-error" class="field-error" data-field-error="contact"></p>
+      </div>
+    </div>
+
+    <div class="field-row">
+      <div class="field">
+        <label for="project-type">Тип проекта</label>
+        <select id="project-type" name="projectType" required aria-describedby="project-type-error">
+          <option value="">Выберите вариант</option>
+          {contact.projectTypes.map((type) => <option value={type}>{type}</option>)}
+        </select>
+        <p id="project-type-error" class="field-error" data-field-error="projectType"></p>
+      </div>
+
+      <div class="field">
+        <label for="project-budget">Предполагаемый бюджет</label>
+        <select id="project-budget" name="budget" required aria-describedby="project-budget-error">
+          <option value="">Выберите диапазон</option>
+          {contact.budgets.map((budget) => <option value={budget}>{budget}</option>)}
+        </select>
+        <p id="project-budget-error" class="field-error" data-field-error="budget"></p>
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="project-description">Описание задачи</label>
+      <textarea
+        id="project-description"
+        name="description"
+        rows="7"
+        required
+        minlength="10"
+        placeholder="Что сейчас приходится делать вручную или какой инструмент вы хотите получить?"
+        aria-describedby="project-description-help project-description-error"
+      ></textarea>
+      <div class="field-meta">
+        <small id="project-description-help">Готовое техническое задание не требуется.</small>
+        <small data-description-count>0 символов</small>
+      </div>
+      <p id="project-description-error" class="field-error" data-field-error="description"></p>
+    </div>
+
+    <div class="form-actions">
+      <button class="primary-button" type="submit">{contact.cta}</button>
+      <button class="secondary-button" type="button" data-contact-copy>Скопировать сообщение</button>
+    </div>
+
+    <p class="form-note">После проверки откроется Telegram с готовым сообщением. Никакие данные не отправляются на сервер этого сайта.</p>
+    <p class="form-status" data-contact-status role="status" aria-live="polite"></p>
+
+    <noscript>
+      <p class="noscript-note">Для подготовки сообщения включите JavaScript или воспользуйтесь ссылками связи рядом с формой.</p>
+    </noscript>
+  </form>
+</section>
+
+<style>
+  .contact-section {
+    width: min(calc(100% - 48px), 1320px);
+    margin-inline: auto;
+    padding: clamp(80px, 11vw, 152px) 0;
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(480px, 1.2fr);
+    align-items: start;
+    gap: clamp(44px, 8vw, 120px);
+    scroll-margin-top: 88px;
+  }
+
+  .contact-intro {
+    position: sticky;
+    top: 112px;
+  }
+
+  .section-kicker {
+    margin: 0 0 14px;
+    color: var(--cyan, #00e5ff);
+    font-family: var(--font-mono, "Geist Mono", monospace);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  h2 {
+    margin: 0;
+    color: var(--text-primary, #f5f7fa);
+    font-size: clamp(43px, 5vw, 72px);
+    line-height: 1;
+    letter-spacing: -0.055em;
+    text-wrap: balance;
+  }
+
+  .contact-intro > p:last-of-type {
+    margin: 24px 0 0;
+    color: var(--text-secondary, #9299a5);
+    font-size: clamp(16px, 1.6vw, 20px);
+    line-height: 1.65;
+  }
+
+  .direct-links {
+    margin-top: 30px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .direct-links a {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    padding-inline: 15px;
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+    border-radius: 12px;
+    color: var(--text-primary, #f5f7fa);
+    background: var(--surface, rgba(255, 255, 255, 0.035));
+    font-size: 13px;
+    text-decoration: none;
+  }
+
+  .contact-form {
+    padding: clamp(22px, 4vw, 38px);
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+    border-radius: 24px;
+    background: var(--surface, rgba(255, 255, 255, 0.035));
+  }
+
+  .field-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 16px;
+  }
+
+  .field {
+    margin-bottom: 20px;
+  }
+
+  label {
+    display: block;
+    margin-bottom: 9px;
+    color: var(--text-primary, #f5f7fa);
+    font-size: 14px;
+    font-weight: 630;
+  }
+
+  input,
+  select,
+  textarea {
+    width: 100%;
+    min-height: 50px;
+    padding: 13px 14px;
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+    border-radius: 12px;
+    color: var(--text-primary, #f5f7fa);
+    background: color-mix(in srgb, var(--background, #050505) 64%, transparent);
+    font: inherit;
+    line-height: 1.45;
+    outline: none;
+    transition:
+      border-color 150ms ease,
+      background-color 150ms ease;
+  }
+
+  textarea {
+    min-height: 160px;
+    resize: vertical;
+  }
+
+  input::placeholder,
+  textarea::placeholder {
+    color: color-mix(in srgb, var(--text-secondary, #9299a5) 72%, transparent);
+  }
+
+  input:focus,
+  select:focus,
+  textarea:focus {
+    border-color: var(--cyan, #00e5ff);
+    background: color-mix(in srgb, var(--cyan, #00e5ff) 4%, var(--background, #050505));
+  }
+
+  input[aria-invalid="true"],
+  select[aria-invalid="true"],
+  textarea[aria-invalid="true"] {
+    border-color: var(--warning, #f5b942);
+  }
+
+  .field-meta {
+    margin-top: 7px;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    color: var(--text-secondary, #9299a5);
+    font-size: 11px;
+  }
+
+  .field-error {
+    min-height: 17px;
+    margin: 6px 0 0;
+    color: var(--warning, #f5b942);
+    font-size: 12px;
+  }
+
+  .form-actions {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 10px;
+  }
+
+  .primary-button,
+  .secondary-button {
+    min-height: 52px;
+    padding-inline: 19px;
+    border-radius: 13px;
+    font: inherit;
+    font-weight: 680;
+    cursor: pointer;
+  }
+
+  .primary-button {
+    border: 1px solid var(--text-primary, #f5f7fa);
+    color: var(--background, #050505);
+    background: var(--text-primary, #f5f7fa);
+  }
+
+  .secondary-button {
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+    color: var(--text-primary, #f5f7fa);
+    background: transparent;
+  }
+
+  .form-note,
+  .form-status,
+  .noscript-note {
+    font-size: 12px;
+    line-height: 1.55;
+  }
+
+  .form-note {
+    margin: 14px 0 0;
+    color: var(--text-secondary, #9299a5);
+  }
+
+  .form-status {
+    min-height: 19px;
+    margin: 10px 0 0;
+    color: var(--success, #32d583);
+  }
+
+  .noscript-note {
+    color: var(--warning, #f5b942);
+  }
+
+  @media (max-width: 980px) {
+    .contact-section {
+      grid-template-columns: 1fr;
+    }
+
+    .contact-intro {
+      position: static;
+      max-width: 760px;
+    }
+  }
+
+  @media (max-width: 620px) {
+    .contact-section {
+      width: min(calc(100% - 32px), 1320px);
+    }
+
+    .field-row,
+    .form-actions {
+      grid-template-columns: 1fr;
+    }
+
+    .field-meta {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    input,
+    select,
+    textarea {
+      transition-duration: 0.01ms;
+    }
+  }
+</style>

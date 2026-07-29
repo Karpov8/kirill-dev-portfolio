@@ -1,0 +1,213 @@
+---
+import { portfolio, resolveTelegramUrl } from "../data/portfolio";
+
+interface Props {
+  title?: string;
+  description?: string;
+  noindex?: boolean;
+}
+
+type ServiceRecord = Record<string, unknown>;
+
+const {
+  title = portfolio.seo.title,
+  description = portfolio.seo.description,
+  noindex = false
+} = Astro.props;
+
+const basePath = import.meta.env.BASE_URL.endsWith("/")
+  ? import.meta.env.BASE_URL
+  : `${import.meta.env.BASE_URL}/`;
+const basePrefix = basePath === "/" ? "" : basePath.replace(/\/$/, "");
+const currentPath = Astro.url.pathname.startsWith("/")
+  ? Astro.url.pathname
+  : `/${Astro.url.pathname}`;
+const canonicalPath =
+  basePrefix &&
+  currentPath !== basePrefix &&
+  !currentPath.startsWith(`${basePrefix}/`)
+    ? `${basePrefix}${currentPath}`
+    : currentPath;
+
+const configuredSite = Astro.site ?? new URL(Astro.url.origin);
+const canonicalUrl = new URL(canonicalPath, configuredSite);
+canonicalUrl.search = "";
+canonicalUrl.hash = "";
+
+const publicAssetPath = (fileName: string) =>
+  `${basePath}${fileName.replace(/^\/+/, "")}`;
+const absolutePublicUrl = (fileName: string) =>
+  new URL(publicAssetPath(fileName), configuredSite).toString();
+
+const faviconUrl = publicAssetPath("favicon.svg");
+const sitemapUrl = absolutePublicUrl("sitemap.xml");
+const ogImageUrl = absolutePublicUrl("images/og-kirill-dev.png");
+
+const placeholderPattern =
+  /(?:example\.(?:com|org|net)|placeholder|replace[-_ ]?me|your[-_ ]?(?:name|email|username)|todo)/i;
+
+function asNonPlaceholderText(value: unknown): string | undefined {
+  if (typeof value !== "string") return undefined;
+  const normalized = value.trim();
+  return normalized && !placeholderPattern.test(normalized) ? normalized : undefined;
+}
+
+function asPublicUrl(value: unknown): string | undefined {
+  const text = asNonPlaceholderText(value);
+  if (!text) return undefined;
+
+  try {
+    const url = new URL(text);
+    return url.protocol === "https:" || url.protocol === "http:"
+      ? url.toString()
+      : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function asPublicEmail(value: unknown): string | undefined {
+  const text = asNonPlaceholderText(value);
+  return text && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(text) ? text : undefined;
+}
+
+function readServiceText(service: ServiceRecord, keys: string[]): string | undefined {
+  for (const key of keys) {
+    const value = asNonPlaceholderText(service[key]);
+    if (value) return value;
+  }
+
+  return undefined;
+}
+
+const serviceRecords = (portfolio.services.items ?? []) as readonly ServiceRecord[];
+const catalogItems = serviceRecords.flatMap((service) => {
+  const name = readServiceText(service, ["title", "name"]);
+  if (!name) return [];
+
+  const serviceDescription = readServiceText(service, [
+    "description",
+    "summary",
+    "shortDescription"
+  ]);
+
+  return [
+    {
+      "@type": "Offer",
+      itemOffered: {
+        "@type": "Service",
+        name,
+        ...(serviceDescription ? { description: serviceDescription } : {})
+      }
+    }
+  ];
+});
+
+const telegramUrl = asPublicUrl(
+  resolveTelegramUrl(portfolio.contacts.telegramUsername, portfolio.contacts.telegramUrl)
+);
+const kworkUrl = asPublicUrl(portfolio.contacts.kworkUrl);
+const githubUrl = asPublicUrl(portfolio.contacts.githubUrl);
+const publicEmail = asPublicEmail(portfolio.contacts.email);
+const sameAs = [telegramUrl, kworkUrl, githubUrl].filter(
+  (url): url is string => Boolean(url)
+);
+
+const personId = `${canonicalUrl.toString()}#person`;
+const serviceId = `${canonicalUrl.toString()}#professional-service`;
+const catalogId = `${canonicalUrl.toString()}#offer-catalog`;
+
+const structuredData = {
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Person",
+      "@id": personId,
+      name: portfolio.profile.name,
+      url: canonicalUrl.toString(),
+      jobTitle: portfolio.profile.positioning,
+      description: portfolio.profile.description,
+      ...(sameAs.length > 0 ? { sameAs } : {}),
+      ...(publicEmail ? { email: `mailto:${publicEmail}` } : {}),
+      ...(catalogItems.length > 0
+        ? {
+            knowsAbout: catalogItems.map(
+              (offer) => offer.itemOffered.name
+            )
+          }
+        : {})
+    },
+    {
+      "@type": "ProfessionalService",
+      "@id": serviceId,
+      name: portfolio.profile.brand,
+      url: canonicalUrl.toString(),
+      description,
+      founder: { "@id": personId },
+      ...(telegramUrl || publicEmail
+        ? {
+            contactPoint: {
+              "@type": "ContactPoint",
+              contactType: "project inquiries",
+              availableLanguage: ["ru"],
+              ...(telegramUrl ? { url: telegramUrl } : {}),
+              ...(publicEmail ? { email: publicEmail } : {})
+            }
+          }
+        : {}),
+      ...(catalogItems.length > 0
+        ? { hasOfferCatalog: { "@id": catalogId } }
+        : {})
+    },
+    {
+      "@type": "OfferCatalog",
+      "@id": catalogId,
+      name: `Услуги ${portfolio.profile.brand}`,
+      itemListElement: catalogItems
+    }
+  ]
+};
+
+const safeStructuredData = JSON.stringify(structuredData).replace(/</g, "\\u003c");
+---
+
+<!doctype html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <meta name="theme-color" content={portfolio.seo.themeColor} />
+    <meta name="color-scheme" content="dark" />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta
+      name="robots"
+      content={noindex ? "noindex, nofollow" : "index, follow, max-image-preview:large"}
+    />
+    <link rel="canonical" href={canonicalUrl.toString()} />
+    <link rel="icon" href={faviconUrl} type="image/svg+xml" />
+    <link rel="sitemap" href={sitemapUrl} type="application/xml" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="ru_RU" />
+    <meta property="og:site_name" content={portfolio.profile.brand} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl.toString()} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:alt" content="Kirill Dev — разработка digital-систем для бизнеса" />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    <script is:inline type="application/ld+json" set:html={safeStructuredData}></script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">Перейти к содержимому</a>
+    <slot />
+  </body>
+</html>

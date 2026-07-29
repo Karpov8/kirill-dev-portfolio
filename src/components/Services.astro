@@ -1,0 +1,474 @@
+---
+import { portfolio } from "../data/portfolio";
+
+const { services } = portfolio;
+const projectTypeByCategory = {
+  Web: "Сайт",
+  Telegram: "Telegram-бот",
+  Automation: "Автоматизация",
+  AI: "AI-консультант",
+} as const;
+---
+
+<section class="services" id="services" aria-labelledby="services-title" data-services>
+  <div class="section-inner">
+    <header class="section-heading">
+      <h2 id="services-title">{services.title}</h2>
+      <p>{services.subtitle}</p>
+    </header>
+
+    <div class="service-filters" role="group" aria-label="Фильтр услуг">
+      {services.filters.map((filter, index) => (
+        <button
+          type="button"
+          class="service-filter"
+          aria-pressed={index === 0 ? "true" : "false"}
+          data-service-filter={filter === "Все" ? "all" : filter.toLowerCase()}
+          data-filter={filter === "Все" ? "all" : filter.toLowerCase()}
+        >
+          {filter}
+        </button>
+      ))}
+    </div>
+
+    <div class="service-grid" data-service-list aria-live="polite">
+      {services.items.map((service, index) => (
+        <article
+          class:list={["service-card", { "service-card--featured": service.featured }]}
+          data-service-card
+          data-category={service.category.toLowerCase()}
+          data-service-id={service.id}
+        >
+          <div class="service-copy">
+            <div class="service-meta">
+              <span class="service-category">{service.category}</span>
+              <span class="service-badge">{service.badge}</span>
+            </div>
+
+            <h3>{service.title}</h3>
+            <p class="service-description">{service.description}</p>
+
+            <div class="service-price-row">
+              <strong>{service.price}</strong>
+              <span>{String(index + 1).padStart(2, "0")}</span>
+            </div>
+          </div>
+
+          <div class="service-mockup" aria-hidden="true">
+            <div class="mockup-bar">
+              <span></span><span></span><span></span>
+              <small>{service.mockup.label}</small>
+            </div>
+            <div class="mockup-body">
+              <div class="mockup-title">
+                <small>{service.category} / предпросмотр</small>
+                <strong>{service.mockup.title}</strong>
+              </div>
+              <div class="mockup-rows">
+                {service.mockup.rows.map((row, rowIndex) => (
+                  <div class="mockup-row">
+                    <span>{row.label}</span>
+                    <strong>{row.value}</strong>
+                    <i class:list={[{ "is-active": rowIndex === 0 }]}></i>
+                  </div>
+                ))}
+              </div>
+              <div class="mockup-progress"><span></span></div>
+            </div>
+          </div>
+
+          <details class="service-details">
+            <summary>Что входит в решение</summary>
+            <ul>
+              {service.features.map((feature) => <li>{feature}</li>)}
+            </ul>
+            <p>{services.sharedNote}</p>
+          </details>
+
+          <a
+            class="service-cta"
+            href="#contact"
+            data-project-type={projectTypeByCategory[service.category]}
+            data-service-name={service.title}
+          >
+            {service.cta}
+          </a>
+        </article>
+      ))}
+    </div>
+  </div>
+</section>
+
+<style>
+  .services {
+    overflow: clip;
+  }
+
+  .service-filters {
+    margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+  }
+
+  .service-filter {
+    min-height: var(--kd-control-md);
+    padding-inline: 1rem;
+    border: 1px solid var(--kd-color-border-subtle);
+    border-radius: var(--kd-radius-full);
+    color: var(--kd-color-text-secondary);
+    background: var(--kd-color-background-surface);
+    font-size: 0.875rem;
+    transition: border-color 160ms ease, color 160ms ease, background 160ms ease;
+  }
+
+  .service-filter:hover,
+  .service-filter[aria-pressed="true"] {
+    border-color: rgb(64 215 232 / 42%);
+    color: var(--kd-color-text-primary);
+    background: var(--kd-color-surface-accent-subtle);
+  }
+
+  .service-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1rem;
+  }
+
+  .service-card {
+    position: relative;
+    min-width: 0;
+    padding: clamp(1.25rem, 2.4vw, 2rem);
+    display: grid;
+    grid-template-rows: auto auto 1fr auto;
+    gap: 1.25rem;
+    border: 1px solid var(--kd-color-border-subtle);
+    border-radius: var(--kd-radius-xl);
+    background: var(--kd-color-background-surface);
+    overflow: clip;
+    transition: transform 180ms ease, border-color 180ms ease, background 180ms ease;
+  }
+
+  .service-card:hover,
+  .service-card:focus-within {
+    border-color: rgb(64 215 232 / 27%);
+    background: var(--kd-color-background-surface-hover);
+    transform: translateY(-2px);
+  }
+
+  .service-card--featured {
+    grid-column: span 2;
+    grid-template-columns: minmax(0, 0.9fr) minmax(20rem, 1.1fr);
+    grid-template-rows: auto auto;
+    gap: clamp(1.5rem, 4vw, 4rem);
+  }
+
+  .service-card[hidden] {
+    display: none;
+  }
+
+  .service-copy {
+    min-width: 0;
+  }
+
+  .service-meta,
+  .service-price-row,
+  .mockup-bar,
+  .mockup-row {
+    display: flex;
+    align-items: center;
+  }
+
+  .service-meta {
+    justify-content: space-between;
+    gap: 1rem;
+  }
+
+  .service-category,
+  .service-badge,
+  .mockup-title small {
+    font-family: var(--kd-font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .service-category {
+    color: var(--kd-color-text-accent);
+  }
+
+  .service-badge {
+    padding: 0.4rem 0.58rem;
+    border: 1px solid var(--kd-color-border-subtle);
+    border-radius: var(--kd-radius-full);
+    color: var(--kd-color-text-secondary);
+    letter-spacing: 0;
+    text-transform: none;
+  }
+
+  .service-card h3 {
+    max-width: 22ch;
+    margin-top: 1.4rem;
+    font-size: clamp(1.45rem, 3vw, 2.25rem);
+    line-height: 1.08;
+    letter-spacing: -0.04em;
+  }
+
+  .service-card:not(.service-card--featured) h3 {
+    font-size: clamp(1.35rem, 2vw, 1.7rem);
+  }
+
+  .service-description {
+    max-width: 42rem;
+    margin-top: 1rem;
+    color: var(--kd-color-text-secondary);
+    line-height: 1.65;
+  }
+
+  .service-price-row {
+    margin-top: 1.5rem;
+    justify-content: space-between;
+  }
+
+  .service-price-row strong {
+    color: var(--kd-color-text-primary);
+    font-size: 1.1rem;
+  }
+
+  .service-price-row span {
+    color: var(--kd-color-text-muted);
+    font-family: var(--kd-font-mono);
+    font-size: 0.7rem;
+  }
+
+  .service-mockup {
+    min-width: 0;
+    align-self: stretch;
+    border: 1px solid var(--kd-color-border-default);
+    border-radius: var(--kd-radius-lg);
+    background: var(--kd-color-background-page);
+    box-shadow: 0 1.5rem 4rem rgb(0 0 0 / 28%);
+    overflow: hidden;
+  }
+
+  .mockup-bar {
+    min-height: 2.2rem;
+    gap: 0.35rem;
+    padding-inline: 0.8rem;
+    border-bottom: 1px solid var(--kd-color-border-subtle);
+  }
+
+  .mockup-bar > span {
+    width: 0.42rem;
+    height: 0.42rem;
+    border-radius: 50%;
+    background: var(--kd-color-border-default);
+  }
+
+  .mockup-bar small {
+    margin-left: auto;
+    color: var(--kd-color-text-muted);
+    font-family: var(--kd-font-mono);
+    font-size: 0.62rem;
+  }
+
+  .mockup-body {
+    padding: clamp(1rem, 2.4vw, 1.6rem);
+  }
+
+  .mockup-title small,
+  .mockup-title strong {
+    display: block;
+  }
+
+  .mockup-title small {
+    color: var(--kd-color-text-accent);
+  }
+
+  .mockup-title strong {
+    margin-top: 0.55rem;
+    font-size: clamp(1rem, 2vw, 1.25rem);
+  }
+
+  .mockup-rows {
+    margin-top: 1.2rem;
+    display: grid;
+    gap: 0.5rem;
+  }
+
+  .mockup-row {
+    min-width: 0;
+    padding: 0.75rem;
+    gap: 0.75rem;
+    border: 1px solid var(--kd-color-border-subtle);
+    border-radius: var(--kd-radius-sm);
+    background: rgb(255 255 255 / 2%);
+    font-size: 0.75rem;
+  }
+
+  .mockup-row span {
+    min-width: 0;
+    color: var(--kd-color-text-muted);
+  }
+
+  .mockup-row strong {
+    margin-left: auto;
+    overflow-wrap: anywhere;
+    text-align: right;
+  }
+
+  .mockup-row i {
+    width: 0.42rem;
+    height: 0.42rem;
+    flex: 0 0 auto;
+    border-radius: 50%;
+    background: var(--kd-color-border-default);
+  }
+
+  .mockup-row i.is-active {
+    background: var(--kd-color-status-success);
+    box-shadow: 0 0 0 0.28rem rgb(91 210 154 / 10%);
+  }
+
+  .mockup-progress {
+    height: 0.28rem;
+    margin-top: 1rem;
+    border-radius: var(--kd-radius-full);
+    background: var(--kd-color-border-subtle);
+    overflow: hidden;
+  }
+
+  .mockup-progress span {
+    width: 68%;
+    height: 100%;
+    display: block;
+    border-radius: inherit;
+    background: linear-gradient(90deg, var(--kd-cyan-400), var(--kd-blue-500));
+  }
+
+  .service-details {
+    border-top: 1px solid var(--kd-color-border-subtle);
+    padding-top: 1rem;
+  }
+
+  .service-card--featured .service-details,
+  .service-card--featured .service-cta {
+    grid-column: 1 / -1;
+  }
+
+  .service-details summary {
+    min-height: 2.75rem;
+    display: flex;
+    align-items: center;
+    color: var(--kd-color-text-primary);
+    font-weight: 600;
+    list-style: none;
+  }
+
+  .service-details summary::-webkit-details-marker {
+    display: none;
+  }
+
+  .service-details summary::after {
+    width: 0.55rem;
+    height: 0.55rem;
+    margin-left: auto;
+    border-right: 1px solid currentcolor;
+    border-bottom: 1px solid currentcolor;
+    content: "";
+    transform: rotate(45deg) translateY(-0.15rem);
+    transition: transform 160ms ease;
+  }
+
+  .service-details[open] summary::after {
+    transform: rotate(225deg) translate(-0.1rem, -0.1rem);
+  }
+
+  .service-details ul {
+    margin: 0.75rem 0 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+    list-style: none;
+  }
+
+  .service-details li {
+    padding: 0.42rem 0.65rem;
+    border: 1px solid var(--kd-color-border-subtle);
+    border-radius: var(--kd-radius-full);
+    color: var(--kd-color-text-secondary);
+    font-size: 0.75rem;
+  }
+
+  .service-details p {
+    margin-top: 1rem;
+    color: var(--kd-color-text-muted);
+    font-size: 0.78rem;
+    line-height: 1.55;
+  }
+
+  .service-cta {
+    min-height: var(--kd-control-lg);
+    padding-inline: 1rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    align-self: end;
+    border: 1px solid var(--kd-color-border-default);
+    border-radius: var(--kd-radius-md);
+    color: var(--kd-color-text-primary);
+    background: rgb(255 255 255 / 4%);
+    font-weight: 650;
+    text-align: center;
+    text-decoration: none;
+    transition: border-color 160ms ease, background 160ms ease;
+  }
+
+  .service-cta:hover,
+  .service-cta:focus-visible {
+    border-color: rgb(64 215 232 / 45%);
+    background: var(--kd-color-surface-accent-subtle);
+  }
+
+  @media (max-width: 860px) {
+    .service-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .service-card--featured {
+      grid-column: auto;
+      grid-template-columns: 1fr;
+      grid-template-rows: auto;
+    }
+
+    .service-card--featured .service-details,
+    .service-card--featured .service-cta {
+      grid-column: auto;
+    }
+  }
+
+  @media (max-width: 430px) {
+    .service-filters {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .service-filter:first-child {
+      grid-column: 1 / -1;
+    }
+
+    .service-card {
+      border-radius: var(--kd-radius-lg);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .service-filter,
+    .service-card,
+    .service-details summary::after,
+    .service-cta {
+      transition: none;
+    }
+  }
+</style>

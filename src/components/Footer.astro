@@ -1,0 +1,139 @@
+---
+import { portfolio, resolveTelegramUrl } from "../data/portfolio";
+
+const { profile, contacts, nav, footer } = portfolio;
+const currentYear = new Date().getFullYear();
+const configured = (value: string | undefined) =>
+  Boolean(value && value.trim() && !/(USERNAME|YOUR_|example\.com|#)/i.test(value));
+const telegramUrl = resolveTelegramUrl(contacts.telegramUsername, contacts.telegramUrl);
+const contactLinks = [
+  telegramUrl && { label: "Telegram", href: telegramUrl },
+  configured(contacts.kworkUrl) && { label: "Kwork", href: contacts.kworkUrl },
+  configured(contacts.githubUrl) && { label: "GitHub", href: contacts.githubUrl },
+  configured(contacts.email) && { label: contacts.email, href: `mailto:${contacts.email}` },
+].filter(Boolean) as Array<{ label: string; href: string }>;
+---
+
+<footer class="site-footer">
+  <div class="footer-main">
+    <div class="footer-brand">
+      <a href="#top">{profile.brand}</a>
+      <p>{footer.tagline}</p>
+    </div>
+
+    <nav aria-label="Навигация в подвале">
+      <strong>Разделы</strong>
+      {nav.map((item) => <a href={item.href}>{item.label}</a>)}
+    </nav>
+
+    {contactLinks.length > 0 && (
+      <nav aria-label="Контакты">
+        <strong>Контакты</strong>
+        {contactLinks.map((link) => (
+          <a href={link.href} target={link.href.startsWith("http") ? "_blank" : undefined} rel={link.href.startsWith("http") ? "noopener noreferrer" : undefined}>
+            {link.label}
+          </a>
+        ))}
+      </nav>
+    )}
+  </div>
+
+  <div class="footer-meta">
+    <span>© {currentYear} {profile.brand}</span>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    width: min(calc(100% - 48px), 1320px);
+    margin-inline: auto;
+    padding: 42px 0 30px;
+    border-top: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  }
+
+  .footer-main {
+    display: grid;
+    grid-template-columns: minmax(0, 1.6fr) repeat(2, minmax(140px, 0.7fr));
+    gap: clamp(34px, 6vw, 80px);
+  }
+
+  .footer-brand > a {
+    color: var(--text-primary, #f5f7fa);
+    font-size: 19px;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    text-decoration: none;
+  }
+
+  .footer-brand p {
+    max-width: 430px;
+    margin: 14px 0 0;
+    color: var(--text-secondary, #9299a5);
+    line-height: 1.6;
+  }
+
+  .footer-main nav {
+    display: grid;
+    align-content: start;
+    gap: 10px;
+  }
+
+  .footer-main nav strong {
+    margin-bottom: 4px;
+    color: var(--text-primary, #f5f7fa);
+    font-size: 13px;
+  }
+
+  .footer-main nav a {
+    width: fit-content;
+    color: var(--text-secondary, #9299a5);
+    font-size: 13px;
+    text-decoration: none;
+  }
+
+  .footer-main nav a:hover,
+  .footer-main nav a:focus-visible {
+    color: var(--text-primary, #f5f7fa);
+  }
+
+  .footer-meta {
+    margin-top: 42px;
+    padding-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    gap: 18px;
+    border-top: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+    color: var(--text-secondary, #9299a5);
+    font-family: var(--font-mono, "Geist Mono", monospace);
+    font-size: 10px;
+  }
+
+  @media (max-width: 760px) {
+    .site-footer {
+      width: min(calc(100% - 32px), 1320px);
+    }
+
+    .footer-main {
+      grid-template-columns: repeat(2, 1fr);
+    }
+
+    .footer-brand {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 460px) {
+    .footer-main {
+      grid-template-columns: 1fr;
+    }
+
+    .footer-brand {
+      grid-column: auto;
+    }
+
+    .footer-meta {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+</style>

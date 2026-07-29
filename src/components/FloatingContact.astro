@@ -1,0 +1,160 @@
+---
+import { portfolio, resolveTelegramUrl } from "../data/portfolio";
+
+const { contacts } = portfolio;
+const telegramUrl = resolveTelegramUrl(contacts.telegramUsername, contacts.telegramUrl);
+const telegramConfigured = Boolean(telegramUrl);
+---
+
+<aside class="floating-contact" data-floating-contact aria-label="Быстрая связь">
+  <button
+    class="floating-trigger"
+    type="button"
+    aria-expanded="false"
+    aria-controls="floating-panel"
+    data-floating-toggle
+  >
+    Есть задача?
+  </button>
+
+  <div class="floating-panel" id="floating-panel" data-floating-panel hidden>
+    <div class="floating-head">
+      <strong>Обсудим проект</strong>
+      <button type="button" aria-label="Закрыть окно быстрой связи" data-floating-close>Закрыть</button>
+    </div>
+    <p>Опишите, что нужно разработать. Готовое ТЗ не требуется.</p>
+    <div class="floating-actions">
+      {telegramConfigured && (
+        <a href={telegramUrl} target="_blank" rel="noopener noreferrer">Telegram</a>
+      )}
+      <a href="#configurator">Рассчитать проект</a>
+      <a href="#services">Посмотреть услуги</a>
+    </div>
+  </div>
+</aside>
+
+<style>
+  .floating-contact {
+    position: fixed;
+    z-index: 90;
+    right: max(20px, env(safe-area-inset-right));
+    bottom: max(20px, env(safe-area-inset-bottom));
+    display: grid;
+    justify-items: end;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(10px);
+    transition:
+      opacity 180ms ease,
+      transform 180ms ease;
+  }
+
+  .floating-contact.is-visible,
+  .floating-contact.is-open {
+    pointer-events: auto;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .floating-contact.is-suppressed:not(.is-open) {
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  :global(body.menu-open) .floating-contact:not(.is-open) {
+    pointer-events: none;
+    opacity: 0;
+  }
+
+  .floating-trigger {
+    min-height: 46px;
+    padding: 0 17px;
+    border: 1px solid var(--border-hover, rgba(0, 229, 255, 0.28));
+    border-radius: 999px;
+    color: var(--background, #050505);
+    background: var(--text-primary, #f5f7fa);
+    box-shadow: 0 16px 50px rgba(0, 0, 0, 0.35);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 680;
+    cursor: pointer;
+  }
+
+  .floating-panel {
+    width: min(340px, calc(100vw - 32px));
+    margin-bottom: 10px;
+    padding: 18px;
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+    border-radius: 18px;
+    background: color-mix(in srgb, var(--background-secondary, #090a0c) 97%, transparent);
+    box-shadow: 0 24px 80px rgba(0, 0, 0, 0.48);
+  }
+
+  .floating-panel[hidden] {
+    display: none;
+  }
+
+  .floating-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .floating-head strong {
+    color: var(--text-primary, #f5f7fa);
+  }
+
+  .floating-head button {
+    min-height: 36px;
+    border: 0;
+    color: var(--text-secondary, #9299a5);
+    background: transparent;
+    font: inherit;
+    font-size: 12px;
+    cursor: pointer;
+  }
+
+  .floating-panel p {
+    margin: 13px 0 0;
+    color: var(--text-secondary, #9299a5);
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  .floating-actions {
+    margin-top: 16px;
+    display: grid;
+    gap: 7px;
+  }
+
+  .floating-actions a {
+    min-height: 42px;
+    display: flex;
+    align-items: center;
+    padding-inline: 12px;
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+    border-radius: 10px;
+    color: var(--text-primary, #f5f7fa);
+    background: var(--surface, rgba(255, 255, 255, 0.035));
+    font-size: 13px;
+    text-decoration: none;
+  }
+
+  @media (max-width: 640px) {
+    .floating-contact {
+      right: 16px;
+      bottom: max(12px, env(safe-area-inset-bottom));
+    }
+
+    .floating-trigger {
+      min-height: 44px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .floating-contact {
+      transition-duration: 0.01ms;
+    }
+  }
+</style>

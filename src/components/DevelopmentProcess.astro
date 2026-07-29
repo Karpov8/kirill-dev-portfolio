@@ -1,0 +1,40 @@
+---
+import { portfolio } from "../data/portfolio";
+
+const { process } = portfolio;
+---
+
+<section class="process" id="process" aria-labelledby="process-title" data-process>
+  <div class="section-inner">
+    <header class="section-heading" data-reveal>
+      <h2 id="process-title">{process.title}</h2>
+    </header>
+
+    <ol class="process-timeline" data-process-timeline>
+      {process.items.map((step) => (
+        <li data-process-step data-reveal>
+          <span aria-hidden="true">{step.number}</span>
+          <div>
+            <h3>{step.title}</h3>
+            <p>{step.description}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  .process { border-block: 1px solid var(--kd-color-border-subtle); background: var(--kd-color-background-section); }
+  .process-timeline { position: relative; margin: 0; padding: 0; display: grid; list-style: none; }
+  .process-timeline::before, .process-timeline::after { position: absolute; top: 0; bottom: 0; left: 2.2rem; width: 1px; content: ""; }
+  .process-timeline::before { background: var(--kd-color-border-default); }
+  .process-timeline::after { background: var(--kd-color-text-accent); transform: scaleY(var(--process-progress, 0)); transform-origin: top; }
+  .process-timeline li { position: relative; min-height: 10rem; padding: 0 0 clamp(2rem, 5vw, 4rem) 6rem; display: grid; grid-template-columns: minmax(8rem, .35fr) minmax(0, 1fr); gap: clamp(1.5rem, 6vw, 6rem); }
+  .process-timeline li:last-child { padding-bottom: 0; }
+  .process-timeline li > span { position: absolute; z-index: 1; top: 0; left: .8rem; width: 2.8rem; height: 2.8rem; display: grid; place-items: center; border: 1px solid rgb(64 215 232 / 32%); border-radius: 50%; color: var(--kd-color-text-accent); background: var(--kd-color-background-section); font-family: var(--kd-font-mono); font-size: .68rem; }
+  .process-timeline h3 { font-size: clamp(1.35rem, 3vw, 2rem); letter-spacing: -.035em; }
+  .process-timeline p { max-width: 44rem; color: var(--kd-color-text-secondary); line-height: 1.7; }
+  @media (max-width: 640px) { .process-timeline::before, .process-timeline::after { left: 1.4rem; } .process-timeline li { min-height: 0; padding-left: 4.2rem; grid-template-columns: 1fr; gap: .6rem; } .process-timeline li > span { left: 0; } }
+  @media (prefers-reduced-motion: reduce) { .process-timeline::after { transform: scaleY(1); } }
+</style>

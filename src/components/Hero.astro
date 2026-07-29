@@ -1,0 +1,485 @@
+---
+import { portfolio } from "../data/portfolio";
+
+const { hero, profile } = portfolio;
+---
+
+<section class="hero" aria-labelledby="hero-title" data-hero>
+  <div class="hero-copy">
+    <p class="eyebrow">{hero.badge}</p>
+    <h1 id="hero-title">
+      {hero.titleBefore}<span>{hero.highlight}</span>{hero.titleAfter}
+    </h1>
+    <p class="hero-subtitle">{hero.subtitle}</p>
+    <p class="hero-description">{hero.description}</p>
+
+    <div class="hero-actions">
+      <a class="primary-action" href={hero.primaryCta.href} data-project-type="Другое">
+        {hero.primaryCta.label}
+      </a>
+      <a class="secondary-action" href={hero.secondaryCta.href}>
+        {hero.secondaryCta.label}
+      </a>
+    </div>
+
+    <div class="availability" aria-label={profile.status}>
+      <span class="status-dot" aria-hidden="true"></span>
+      <span>{profile.status}</span>
+      <span class="availability-note">{hero.availabilityNote}</span>
+    </div>
+
+    <nav class="intent-paths" aria-label="Выберите подходящий сценарий">
+      <a href="#contact" data-project-type="Другое" data-form-note="Готового технического задания нет. Нужна помощь с выбором решения.">
+        <span>Нет ТЗ</span>
+        <small>Опишите проблему — предложу решение</small>
+      </a>
+      <a href="#services" data-budget="до 3 000 ₽">
+        <span>Небольшая задача</span>
+        <small>Можно начать с точечной доработки</small>
+      </a>
+      <a href="#configurator">
+        <span>Нужна система</span>
+        <small>Соберите предварительную архитектуру</small>
+      </a>
+    </nav>
+  </div>
+
+  <div class="system-demo" role="img" aria-label="Схема обработки новой заявки от сайта до менеджера">
+    <div class="demo-head">
+      <div>
+        <span class="demo-kicker">Рабочий процесс</span>
+        <strong>Обработка заявки</strong>
+      </div>
+      <span class="event-status">Система активна</span>
+    </div>
+
+    <div class="incoming-event">
+      <span>Событие 01</span>
+      <strong>Новая заявка</strong>
+      <small>Получена с сайта</small>
+    </div>
+
+    <ol class="flow" aria-hidden="true">
+      <li class="flow-node flow-node--active">
+        <span>01</span>
+        <strong>Сайт</strong>
+        <small>форма отправлена</small>
+      </li>
+      <li class="flow-link"></li>
+      <li class="flow-node">
+        <span>02</span>
+        <strong>API</strong>
+        <small>данные проверены</small>
+      </li>
+      <li class="flow-link"></li>
+      <li class="flow-node">
+        <span>03</span>
+        <strong>CRM + Sheets</strong>
+        <small>запись создана</small>
+      </li>
+      <li class="flow-link"></li>
+      <li class="flow-node">
+        <span>04</span>
+        <strong>Telegram</strong>
+        <small>менеджер уведомлён</small>
+      </li>
+    </ol>
+
+    <div class="manager-result">
+      <span>Менеджер</span>
+      <strong>Статус: обработано</strong>
+      <small>Заявка взята в работу</small>
+    </div>
+  </div>
+</section>
+
+<style>
+  .hero {
+    width: min(calc(100% - 48px), 1320px);
+    min-height: auto;
+    margin-inline: auto;
+    padding: clamp(128px, 11vw, 164px) 0 clamp(64px, 7vw, 96px);
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(420px, 0.95fr);
+    align-items: center;
+    gap: clamp(48px, 7vw, 104px);
+  }
+
+  .eyebrow,
+  .demo-kicker {
+    margin: 0 0 18px;
+    color: var(--cyan, #00e5ff);
+    font-family: var(--font-mono, "Geist Mono", monospace);
+    font-size: 12px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+  }
+
+  .hero > .hero-copy > .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    min-height: 30px;
+    padding: 6px 10px;
+    border: 1px solid color-mix(in srgb, var(--cyan, #00e5ff) 28%, transparent);
+    border-radius: 999px;
+    background: color-mix(in srgb, var(--cyan, #00e5ff) 7%, transparent);
+    letter-spacing: 0.08em;
+  }
+
+  h1 {
+    max-width: 820px;
+    margin: 0;
+    color: var(--text-primary, #f5f7fa);
+    font-size: clamp(48px, 6.3vw, 88px);
+    line-height: 0.98;
+    letter-spacing: -0.065em;
+    text-wrap: balance;
+  }
+
+  h1 span {
+    color: var(--cyan, #00e5ff);
+    text-shadow: 0 0 34px color-mix(in srgb, var(--cyan, #00e5ff) 28%, transparent);
+  }
+
+  .hero-subtitle {
+    max-width: 740px;
+    margin: 24px 0 0;
+    color: var(--text-primary, #f5f7fa);
+    font-size: clamp(21px, 2vw, 30px);
+    line-height: 1.28;
+    letter-spacing: -0.035em;
+  }
+
+  .hero-description {
+    max-width: 700px;
+    margin: 20px 0 0;
+    color: var(--text-secondary, #9299a5);
+    font-size: clamp(16px, 1.35vw, 19px);
+    line-height: 1.65;
+  }
+
+  .hero-actions {
+    margin-top: 34px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .primary-action,
+  .secondary-action {
+    min-height: 52px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding-inline: 22px;
+    border-radius: 14px;
+    font-weight: 680;
+    text-decoration: none;
+    transition:
+      transform 160ms ease,
+      border-color 160ms ease,
+      background-color 160ms ease;
+  }
+
+  .primary-action {
+    color: #fff;
+    background: linear-gradient(135deg, var(--blue, #5d6bff), #397ee8);
+    border: 1px solid color-mix(in srgb, var(--blue, #5d6bff) 78%, white);
+    box-shadow: 0 12px 32px color-mix(in srgb, var(--blue, #5d6bff) 18%, transparent);
+  }
+
+  .secondary-action {
+    color: var(--text-primary, #f5f7fa);
+    background: var(--surface, rgba(255, 255, 255, 0.035));
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+  }
+
+  .primary-action:hover,
+  .secondary-action:hover {
+    transform: translateY(-2px);
+  }
+
+  .secondary-action:hover {
+    border-color: var(--border-hover, rgba(0, 229, 255, 0.28));
+  }
+
+  .availability {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 9px;
+    color: var(--text-primary, #f5f7fa);
+    font-size: 14px;
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    background: var(--success, #32d583);
+    box-shadow: 0 0 0 5px color-mix(in srgb, var(--success, #32d583) 12%, transparent);
+    animation: statusPulse 2.6s ease-in-out infinite;
+  }
+
+  .availability-note {
+    color: var(--text-secondary, #9299a5);
+  }
+
+  .availability-note::before {
+    content: "·";
+    margin-right: 9px;
+  }
+
+  .intent-paths {
+    margin-top: 38px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .intent-paths a {
+    min-width: 0;
+    padding: 15px;
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+    border-radius: 14px;
+    color: var(--text-primary, #f5f7fa);
+    background: var(--surface, rgba(255, 255, 255, 0.035));
+    text-decoration: none;
+    transition: border-color 160ms ease, background-color 160ms ease;
+  }
+
+  .intent-paths a:hover,
+  .intent-paths a:focus-visible {
+    border-color: var(--border-hover, rgba(0, 229, 255, 0.28));
+    background: var(--surface-hover, rgba(255, 255, 255, 0.055));
+  }
+
+  .intent-paths span,
+  .intent-paths small {
+    display: block;
+  }
+
+  .intent-paths span {
+    font-size: 14px;
+    font-weight: 650;
+  }
+
+  .intent-paths small {
+    margin-top: 6px;
+    color: var(--text-secondary, #9299a5);
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
+  .system-demo {
+    position: relative;
+    padding: clamp(18px, 3vw, 30px);
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+    border-radius: 24px;
+    background: color-mix(in srgb, var(--background-secondary, #090a0c) 92%, transparent);
+    box-shadow: 0 40px 110px rgba(0, 0, 0, 0.38);
+    isolation: isolate;
+  }
+
+  .system-demo::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    z-index: -1;
+    border: 1px solid color-mix(in srgb, var(--cyan, #00e5ff) 13%, transparent);
+    border-radius: inherit;
+    pointer-events: none;
+  }
+
+  .demo-head,
+  .incoming-event,
+  .manager-result {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+  }
+
+  .demo-kicker {
+    display: block;
+    margin-bottom: 6px;
+  }
+
+  .demo-head strong,
+  .incoming-event strong,
+  .manager-result strong {
+    color: var(--text-primary, #f5f7fa);
+  }
+
+  .event-status {
+    padding: 7px 10px;
+    border: 1px solid color-mix(in srgb, var(--success, #32d583) 28%, transparent);
+    border-radius: 999px;
+    color: var(--success, #32d583);
+    font-family: var(--font-mono, "Geist Mono", monospace);
+    font-size: 10px;
+  }
+
+  .incoming-event,
+  .manager-result {
+    margin-top: 24px;
+    padding: 14px 16px;
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+    border-radius: 14px;
+    background: var(--surface, rgba(255, 255, 255, 0.035));
+  }
+
+  .incoming-event span,
+  .manager-result span,
+  .incoming-event small,
+  .manager-result small,
+  .flow-node span,
+  .flow-node small {
+    color: var(--text-secondary, #9299a5);
+    font-family: var(--font-mono, "Geist Mono", monospace);
+    font-size: 10px;
+  }
+
+  .flow {
+    margin: 20px 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 22px minmax(0, 1fr) 22px minmax(0, 1fr) 22px minmax(0, 1fr);
+    align-items: center;
+    list-style: none;
+  }
+
+  .flow-node {
+    min-width: 0;
+    min-height: 104px;
+    padding: 13px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border: 1px solid var(--border, rgba(255, 255, 255, 0.08));
+    border-radius: 12px;
+    background: var(--surface, rgba(255, 255, 255, 0.035));
+    animation: nodeTrace 8s ease-in-out infinite;
+  }
+
+  .flow-node:nth-of-type(3) { animation-delay: 1.4s; }
+  .flow-node:nth-of-type(5) { animation-delay: 2.8s; }
+  .flow-node:nth-of-type(7) { animation-delay: 4.2s; }
+
+  .flow-node strong {
+    overflow-wrap: anywhere;
+    color: var(--text-primary, #f5f7fa);
+    font-size: 13px;
+    line-height: 1.25;
+  }
+
+  .flow-link {
+    height: 1px;
+    border-top: 1px solid color-mix(in srgb, var(--cyan, #00e5ff) 42%, transparent);
+  }
+
+  .manager-result {
+    border-color: color-mix(in srgb, var(--success, #32d583) 26%, transparent);
+  }
+
+  @keyframes nodeTrace {
+    0%, 70%, 100% {
+      border-color: var(--border, rgba(255, 255, 255, 0.08));
+      background: var(--surface, rgba(255, 255, 255, 0.035));
+    }
+    8%, 22% {
+      border-color: var(--border-hover, rgba(0, 229, 255, 0.28));
+      background: color-mix(in srgb, var(--cyan, #00e5ff) 7%, transparent);
+    }
+  }
+
+  @keyframes statusPulse {
+    50% { opacity: 0.55; }
+  }
+
+  @media (max-width: 1120px) {
+    .hero {
+      grid-template-columns: 1fr;
+      min-height: auto;
+    }
+
+    .hero-copy {
+      max-width: 900px;
+    }
+
+    .system-demo {
+      width: min(100%, 820px);
+    }
+  }
+
+  @media (max-width: 680px) {
+    .hero {
+      width: min(calc(100% - 32px), 1320px);
+      padding-top: 116px;
+      gap: 48px;
+    }
+
+    h1 {
+      font-size: clamp(43px, 13vw, 62px);
+    }
+
+    .hero-actions {
+      display: grid;
+    }
+
+    .primary-action,
+    .secondary-action {
+      width: 100%;
+    }
+
+    .availability-note {
+      width: 100%;
+      padding-left: 17px;
+    }
+
+    .availability-note::before {
+      content: none;
+    }
+
+    .intent-paths {
+      grid-template-columns: 1fr;
+    }
+
+    .flow {
+      grid-template-columns: 1fr;
+      gap: 0;
+    }
+
+    .flow-node {
+      min-height: 82px;
+    }
+
+    .flow-link {
+      width: 1px;
+      height: 18px;
+      margin-left: 24px;
+      border-top: 0;
+      border-left: 1px solid color-mix(in srgb, var(--cyan, #00e5ff) 42%, transparent);
+    }
+
+    .incoming-event,
+    .manager-result {
+      align-items: flex-start;
+      flex-direction: column;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .status-dot,
+    .flow-node {
+      animation: none;
+    }
+
+    .primary-action,
+    .secondary-action,
+    .intent-paths a {
+      transition-duration: 0.01ms;
+    }
+  }
+</style>
